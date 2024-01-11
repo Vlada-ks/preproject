@@ -15,12 +15,14 @@ private static final String PASSWORD = "roots";
 public static Connection connection;
 public static Statement statement;
 
-public static Connection getConnection() {
+    private Util() {
+    }
+
+    public static Connection getConnection() {
 
 
     try {
         connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-        statement = connection.createStatement();
         connection.setAutoCommit(false);
 
 
@@ -32,17 +34,7 @@ public static Connection getConnection() {
 
 }
 
-public static Statement getStatement() {
-
-    try {
-        statement = connection.createStatement();
-
-    } catch (SQLException e) {
-        e.printStackTrace();
-    }
-    return statement;
 
 
-}
 
 }
