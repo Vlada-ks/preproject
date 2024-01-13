@@ -1,18 +1,16 @@
 package jm.task.core.jdbc.util;
 
 import jm.task.core.jdbc.model.User;
+import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
 import org.hibernate.service.ServiceRegistry;
 
-
-import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Properties;
 
 public class Util {
@@ -21,9 +19,9 @@ public class Util {
     private static final String USERNAME = "roots";
     private static final String PASSWORD = "roots";
     public static Connection connection;
-    public static Statement statement;
 
     private static SessionFactory sessionFactory;
+
     public static SessionFactory getSessionFactory() {
         if (sessionFactory == null) {
             try {
@@ -55,36 +53,44 @@ public class Util {
         return sessionFactory;
     }
 
-
-
-public static Connection getConnection() {
-
-
-    try {
-        connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-        statement = connection.createStatement();
-        connection.setAutoCommit(false);
-
-
-    } catch (SQLException e) {
-        e.printStackTrace();
+    public static void closes() {
+        try {
+            if (getSessionFactory() != null) {
+                getSessionFactory().close();
+            }
+        } catch (HibernateException e) {
+            e.printStackTrace();
+        }
     }
-    return connection;
 
 
-}
-
-public static Statement getStatement() {
-
-    try {
-        statement = connection.createStatement();
-
-    } catch (SQLException e) {
-        e.printStackTrace();
+    private Util() {
     }
-    return statement;
+
+    public static Connection getConnection() {
 
 
-}
+        try {
+            connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+            connection.setAutoCommit(false);
+
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return connection;
+
+
+    }
+
+    public static void close() {
+        try {
+            if (getConnection() != null) {
+                getConnection().close();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
 }
